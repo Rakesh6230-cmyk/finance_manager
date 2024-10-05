@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Restore Data from Backup</h2>
+    <form action="{% url 'restore_data' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="backup_file">Choose a backup file to restore:</label>
+            <input type="file" id="backup_file" name="backup_file" accept=".json" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-warning mt-3">Restore Backup</button>
+    </form>
+</div>
+{% endblock %}

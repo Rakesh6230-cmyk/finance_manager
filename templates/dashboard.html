@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1>Welcome, {{ user.username }}!</h1>
+
+    <!-- Financial Overview -->
+    <div class="financial-summary">
+        <h2>Financial Summary</h2>
+        <p>Total Income: <strong>${{ total_income }}</strong></p>
+        <p>Total Expenses: <strong>${{ total_expenses }}</strong></p>
+        <p>Savings: <strong>${{ savings }}</strong></p>
+        <p>Budget: <strong>${{ total_budget }}</strong></p>
+    </div>
+
+    <!-- Add buttons for quick access to adding income/expense -->
+    <div class="add-buttons">
+        <a href="{% url 'add_income' %}" class="btn btn-primary">Add Income</a>
+        <a href="{% url 'add_expense' %}" class="btn btn-secondary">Add Expense</a>
+        <a href="{% url 'add_budget' %}" class="btn btn-success">Set Budget</a>
+        {% comment %} <a href="{% url 'monthly_report' year=current_year month=current_month %}">View Monthly Report</a>
+        <a href="{% url 'yearly_report' year=current_year %}">View Yearly Report</a> {% endcomment %}
+        {% comment %} <a href="{% url 'restore_data_page' %}" class="btn btn-warning">Restore Backup</a> {% endcomment %}
+    </div>
+
+    <!-- Income section -->
+    <div class="income-section">
+        <h2>Your Income</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if incomes %}
+                    {% for income in incomes %}
+                    <tr>
+                        <td>{{ income.description }}</td>
+                        <td>${{ income.amount }}</td>
+                        <td>{{ income.category }}</td>
+                        <td>{{ income.date }}</td>
+                        <td>
+                            <a href="{% url 'update_income' income.pk %}">Edit</a> |
+                            <a href="{% url 'delete_income' income.pk %}">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5">No income entries yet.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Expense section -->
+    <div class="expense-section">
+        <h2>Your Expenses</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if expenses %}
+                    {% for expense in expenses %}
+                    <tr>
+                        <td>{{ expense.description }}</td>
+                        <td>${{ expense.amount }}</td>
+                        <td>{{ expense.category }}</td>
+                        <td>{{ expense.date }}</td>
+                        <td>
+                            <a href="{% url 'update_expense' expense.pk %}">Edit</a> |
+                            <a href="{% url 'delete_expense' expense.pk %}">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5">No expense entries yet.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    {% comment %} <!-- Budget Section -->
+    <div class="budget-section">
+        <h2>Your Budget</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Month</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if budgets %}
+                    {% for budget in budgets %}
+                    <tr>
+                        <td>{{ budget.category }}</td>
+                        <td>${{ budget.amount }}</td>
+                        <td>{{ budget.month|date:"F Y" }}</td>
+                        <td>
+                            <a href="{% url 'update_budget' budget.pk %}">Edit</a> |
+                            <a href="{% url 'delete_budget' budget.pk %}">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4">No budget set yet.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div> {% endcomment %}
+
+    <!-- Backup and Restore Section -->
+    <div class="backup-restore-section mt-4">
+        <h2>Backup and Restore</h2>
+        <!-- Download backup button -->
+        <a href="{% url 'backup_data' %}" class="btn btn-primary mb-3">Download Backup</a>
+
+        <!-- File upload form for restoring data -->
+        <form action="{% url 'restore_data' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="backup_file" class="form-label">Choose a backup file to restore:</label>
+                <input type="file" id="backup_file" name="backup_file" accept=".json" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-warning">Restore Backup</button>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
